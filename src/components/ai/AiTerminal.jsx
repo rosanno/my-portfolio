@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Terminal, X, Send } from "lucide-react";
 import { buildContextPrompt } from "./buildContextPrompt.js";
@@ -59,14 +59,16 @@ export default function AiTerminal() {
           .filter((block) => block.type === "text")
           .map((block) => block.text)
           .join("\n")
-          .trim() || "I couldn't come up with an answer just now — try asking differently.";
+          .trim() ||
+        "I couldn't come up with an answer just now — try asking differently.";
       setMessages([...nextMessages, { role: "assistant", content: text }]);
     } catch (err) {
       setMessages([
         ...nextMessages,
         {
           role: "assistant",
-          content: "Something went wrong reaching the AI. Please try again in a moment.",
+          content:
+            "Something went wrong reaching the AI. Please try again in a moment.",
         },
       ]);
     } finally {
@@ -96,13 +98,22 @@ export default function AiTerminal() {
               <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
               <span className="w-2.5 h-2.5 rounded-full bg-amber-400" />
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-              <span className="ml-2 text-xs text-slate-400">sanno-ai — bash</span>
+              <span className="ml-2 text-xs text-slate-400">
+                sanno-ai — bash
+              </span>
             </div>
 
-            <div ref={scrollRef} className="flex-1 overflow-y-auto px-3 py-3 space-y-3 text-sm">
+            <div
+              ref={scrollRef}
+              className="flex-1 overflow-y-auto px-3 py-3 space-y-3 text-sm"
+            >
               {messages.map((m, i) => (
                 <div key={i}>
-                  <div className={m.role === "user" ? "text-cyan-400" : "text-emerald-400"}>
+                  <div
+                    className={
+                      m.role === "user" ? "text-cyan-400" : "text-emerald-400"
+                    }
+                  >
                     {m.role === "user" ? "visitor@portfolio:~$" : "sanno-ai:~$"}
                   </div>
                   <div className="text-slate-200 whitespace-pre-wrap leading-relaxed">
@@ -140,14 +151,40 @@ export default function AiTerminal() {
         )}
       </AnimatePresence>
 
-      <button
+      <motion.button
         onClick={() => setOpen((o) => !o)}
         aria-label={open ? "Close AI assistant" : "Open AI assistant"}
-        className="flex items-center gap-2 rounded-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 pl-4 pr-5 py-3 shadow-lg transition-colors"
+        className="flex items-center gap-2 rounded-full bg-cyan-500 text-slate-950 pl-4 pr-5 py-3 shadow-lg"
+        whileHover={{ scale: 1.05, backgroundColor: "#22d3ee" }}
+        whileTap={{ scale: 0.94 }}
+        animate={
+          open
+            ? { boxShadow: "0 0 0 4px rgba(34,211,238,0.15)" }
+            : { boxShadow: "0 0 0 0px rgba(34,211,238,0)" }
+        }
+        transition={{
+          duration: 0.12,
+          ease: "easeOut",
+        }}
       >
-        {open ? <X size={18} /> : <Terminal size={18} />}
-        <span className="text-sm font-semibold">{open ? "close" : "ask my ai"}</span>
-      </button>
+        <span className="relative w-[18px] h-[18px] shrink-0">
+          <AnimatePresence initial={false}>
+            <motion.span
+              key={open ? "close" : "terminal"}
+              initial={{ rotate: -90, opacity: 0 }}
+              animate={{ rotate: 0, opacity: 1 }}
+              exit={{ rotate: 90, opacity: 0 }}
+              transition={{ duration: 0.12 }}
+              className="absolute inset-0 flex items-center justify-center"
+            >
+              {open ? <X size={18} /> : <Terminal size={18} />}
+            </motion.span>
+          </AnimatePresence>
+        </span>
+        <span className="text-sm font-semibold">
+          {open ? "close" : "ask my ai"}
+        </span>
+      </motion.button>
     </div>
   );
 }
